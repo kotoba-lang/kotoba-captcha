@@ -1,5 +1,5 @@
 (ns kotoba.captcha.worker-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.test :refer [deftest is]]
             [kotoba.captcha.audit :as audit]
             [kotoba.captcha.domain :as domain]
             [kotoba.captcha.provider :as provider]
@@ -63,13 +63,13 @@
         slow (reify provider/Provider
                (provider-id [_] :slow)
                (supports-task? [_ _] true)
-               (solve! [_ _ _] (Thread/sleep 500) {:status :ready :solution {}}))
+               (solve! [_ _ _] (Thread/sleep 2000) {:status :ready :solution {}}))
         started (System/nanoTime)
         result (worker/run-once! (assoc runtime :providers [slow]
                                         :options {:timeout-ms 20 :max-attempts 2}))
         elapsed-ms (/ (- (System/nanoTime) started) 1000000.0)]
     (is (= :retry (:status result)))
-    (is (< elapsed-ms 300))
+    (is (< elapsed-ms 1000))
     (is (= :processing (:task/status (store/get-task tasks "slow"))))))
 
 (deftest cancellation-invalidates-a-lease

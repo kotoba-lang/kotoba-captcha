@@ -32,9 +32,10 @@
          {:status :retry :error "Provider deadline exceeded"}
          result))
      :cljs
-     (try (provider/solve! selected task context)
-          (catch :default error
-            {:status :retry :error (ex-message error)}))))
+     (let [_ timeout-ms]
+       (try (provider/solve! selected task context)
+            (catch :default error
+              {:status :retry :error (ex-message error)})))))
 
 (defn- retry-or-fail! [queue task token result options finished]
   (let [attempt (:task/attempt task)]

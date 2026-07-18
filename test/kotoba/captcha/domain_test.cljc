@@ -1,5 +1,5 @@
 (ns kotoba.captcha.domain-test
-  (:require [clojure.test :refer [deftest is testing]]
+  (:require [clojure.test :refer [deftest is]]
             [kotoba.captcha.api :as api]
             [kotoba.captcha.domain :as domain]
             [kotoba.captcha.store :as store]))

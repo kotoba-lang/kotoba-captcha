@@ -42,7 +42,7 @@
                                           {"authorization" "Bearer correct"})))))
     (is (nil? (:clientKey @seen)))
     (is (= 503 (:status ((http/make-handler {})
-                         (request "/createTask" {:clientKey "anything"}))))))
+                         (request "/createTask" {:clientKey "anything"})))))))
 
 (deftest limits-errors-and-operational-endpoints
   (let [limiter (http/fixed-window-limiter {:limit 1 :clock (constantly 1000)})

@@ -1,5 +1,4 @@
-(ns kotoba.captcha.audit
-  (:require [clojure.string :as str]))
+(ns kotoba.captcha.audit)
 
 (def sensitive-key-pattern
   #"(?i)(client.?key|api.?key|authorization|cookie|password|secret|token|solution|credential)")

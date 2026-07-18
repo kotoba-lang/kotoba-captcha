@@ -35,7 +35,25 @@ apply quotas, and expire task data.
 
 ```sh
 clojure -M:test
+clojure -M:lint
 ```
 
-HTTP routing, durable persistence, and execution workers are separate adapters
-so the pure contract remains usable from JVM, ClojureScript, and WASM hosts.
+## Run locally
+
+The local host binds to loopback, fails closed when no key is configured, and
+runs the synthetic provider in a leased background worker:
+
+```sh
+export KOTOBA_CAPTCHA_API_KEYS='replace-with-a-local-secret'
+clojure -M:server
+```
+
+`POST /createTask` and `POST /getTaskResult` accept `clientKey` or a Bearer
+token. `/health` and `/metrics` expose no task payloads. The in-memory store is
+for development; production deployments must inject a durable `TaskStore` and
+encrypt retained payloads.
+
+The worker layer provides leases, bounded retries, deadlines, cancellation,
+redacted audit retention, human hand-off, synthetic fixtures, and a
+first-party-only vision backend boundary. See
+[`docs/worker-runtime.md`](docs/worker-runtime.md).
