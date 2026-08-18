@@ -1,5 +1,7 @@
 {:paths ["src"]
- :deps {cheshire/cheshire {:mvn/version "5.13.0"}}
+ :deps {
+        io.github.kotoba-lang/json {:git/sha "1adc364ea7011d1fc8ade6d31a34bbbef76ecefe"}
+       }
  :aliases
  {:test {:extra-paths ["test"]
          :extra-deps {io.github.cognitect-labs/test-runner
