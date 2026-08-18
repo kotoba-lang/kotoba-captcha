@@ -1,5 +1,5 @@
 (ns kotoba.captcha.http-test
-  (:require [cheshire.core :as json]
+  (:require [json.compat :as json]
             [clojure.string :as str]
             [clojure.test :refer [deftest is]]
             [kotoba.captcha.http :as http]
@@ -66,3 +66,27 @@
           :nested [{:authorization "[REDACTED]" :safe "yes"}]}
          (http/redact {:clientKey "secret"
                        :nested [{:authorization "Bearer secret" :safe "yes"}]}))))
+
+(defn raw-request
+  "A request whose body is arbitrary bytes rather than encoded JSON, so the
+  handler's own parse failure is what is under test."
+  [uri ^String raw]
+  {:request-method :post :uri uri :headers {}
+   :body (java.io.ByteArrayInputStream. (.getBytes raw "UTF-8"))})
+
+(deftest malformed-body-is-400-not-500
+  "This path had NO test while it was guarded by a Jackson class, and the class
+  was load-bearing: the handler caught JsonProcessingException -> 400 BEFORE a
+  general ExceptionInfo -> 500. Moving to json.compat makes a parse failure an
+  ExceptionInfo too, so clause order stops separating them and :type has to.
+  Untested, that swap would have turned every malformed body into a 500 without
+  failing a single test.
+
+  Break: change the :json/parse-error branch in http.clj to :else and this
+  returns 500."
+  (let [handler (http/make-handler {:task-store (store/memory-store)
+                                    :api-keys ["test-secret"]})]
+    (doseq [bad ["{" "not json at all" "" "{\"clientKey\":}"]]
+      (let [resp (handler (raw-request "/createTask" bad))]
+        (is (= 400 (:status resp)) (str "body " (pr-str bad) " -> " (:status resp)))
+        (is (= "ERROR_BAD_PARAMETERS" (:errorCode (parsed resp))))))))

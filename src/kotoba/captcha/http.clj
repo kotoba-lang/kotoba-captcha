@@ -1,7 +1,7 @@
 (ns kotoba.captcha.http
   "Ring transport for the authorized solver API. Credentials are never passed
   to the core service or retained in task state."
-  (:require [cheshire.core :as json]
+  (:require [json.compat :as json]
             [clojure.string :as str]
             [kotoba.captcha.api :as api]))
 
@@ -122,11 +122,18 @@
             :else
             (do (record! "not-found" 404)
                 (response 404 (api/error-response "ERROR_ROUTE_NOT_FOUND" "Not found"))))
-          (catch com.fasterxml.jackson.core.JsonProcessingException _
-            (record! uri 400)
-            (response 400 (api/error-response "ERROR_BAD_PARAMETERS" "Invalid JSON body")))
+          ;; A malformed body must stay a 400 and not become a 500. cheshire
+          ;; signalled that with a Jackson class, which cannot cross to cljs;
+          ;; json.compat signals it with :type :json/parse-error. Both that and
+          ;; :body-too-large now arrive as ExceptionInfo, so clause ORDER no
+          ;; longer separates them -- the :type does, which is why these are one
+          ;; clause rather than two.
           (catch clojure.lang.ExceptionInfo e
-            (if (= :body-too-large (:type (ex-data e)))
+            (case (:type (ex-data e))
+              :json/parse-error
+              (do (record! uri 400)
+                  (response 400 (api/error-response "ERROR_BAD_PARAMETERS" "Invalid JSON body")))
+              :body-too-large
               (do (record! uri 413)
                   (response 413 (api/error-response "ERROR_BODY_TOO_LARGE" "Request body too large")))
               (do (record! uri 500)
