@@ -2,7 +2,7 @@
   "Ring transport for the authorized solver API. Credentials are never passed
   to the core service or retained in task state."
   (:require [json.compat :as json]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [kotoba.captcha.api :as api]))
 
 (def ^:private sensitive-key-pattern

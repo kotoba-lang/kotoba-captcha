@@ -1,6 +1,6 @@
 (ns kotoba.captcha.http-test
   (:require [json.compat :as json]
-            [clojure.string :as str]
+            [kotoba.lang.text :as str]
             [clojure.test :refer [deftest is]]
             [kotoba.captcha.http :as http]
             [kotoba.captcha.store :as store]))

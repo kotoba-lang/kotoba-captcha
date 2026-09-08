@@ -1,7 +1,7 @@
 (ns kotoba.captcha.server
   "Optional local host. `run-server` is injected (for example http-kit), keeping
   the library dependency-light and the lifecycle explicit."
-  (:require [clojure.string :as str]
+  (:require [kotoba.lang.text :as str]
             [kotoba.captcha.http :as http]
             [kotoba.captcha.provider :as provider]
             [kotoba.captcha.store :as store]
