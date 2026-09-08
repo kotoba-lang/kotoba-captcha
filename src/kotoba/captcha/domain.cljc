@@ -1,5 +1,5 @@
 (ns kotoba.captcha.domain
-  (:require [clojure.string :as str]))
+  (:require [kotoba.lang.text :as str]))
 
 (def terminal-statuses #{:ready :failed :cancelled :expired})
 (def supported-task-types
