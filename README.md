@@ -34,8 +34,8 @@ apply quotas, and expire task data.
 ## Verify
 
 ```sh
-clojure -M:test
-clojure -M:lint
+kbb -M:test
+kbb -M:lint
 ```
 
 ## Run locally
@@ -45,7 +45,7 @@ runs the synthetic provider in a leased background worker:
 
 ```sh
 export KOTOBA_CAPTCHA_API_KEYS='replace-with-a-local-secret'
-clojure -M:server
+kbb -M:server
 ```
 
 `POST /createTask` and `POST /getTaskResult` accept `clientKey` or a Bearer
