@@ -1,6 +1,6 @@
 (ns kotoba.captcha.e2e-test
   (:require [json.compat :as json]
-            [clojure.test :refer [deftest is]]
+            [kotoba.test :refer [deftest is]]
             [kotoba.captcha.http :as http]
             [kotoba.captcha.provider :as provider]
             [kotoba.captcha.store :as store]
