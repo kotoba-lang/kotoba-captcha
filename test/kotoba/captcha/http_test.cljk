@@ -1,5 +1,5 @@
 (ns kotoba.captcha.http-test
-  (:require [json.compat :as json]
+  (:require [kotoba.bytes :as kbytes] [json.compat :as json]
             [kotoba.lang.text :as str]
             [kotoba.test :refer [deftest is]]
             [kotoba.captcha.http :as http]
@@ -10,7 +10,7 @@
   ([uri body headers]
    {:request-method :post :uri uri :headers headers
     :body (java.io.ByteArrayInputStream.
-           (.getBytes (json/generate-string body) "UTF-8"))}))
+           (kbytes/utf8-bytes (json/generate-string body)))}))
 
 (defn parsed [response] (json/parse-string (:body response) true))
 
@@ -72,7 +72,7 @@
   handler's own parse failure is what is under test."
   [uri ^String raw]
   {:request-method :post :uri uri :headers {}
-   :body (java.io.ByteArrayInputStream. (.getBytes raw "UTF-8"))})
+   :body (java.io.ByteArrayInputStream. (kbytes/utf8-bytes raw))})
 
 (deftest malformed-body-is-400-not-500
   "This path had NO test while it was guarded by a Jackson class, and the class
