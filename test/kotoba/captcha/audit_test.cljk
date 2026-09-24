@@ -1,5 +1,5 @@
 (ns kotoba.captcha.audit-test
-  (:require [clojure.test :refer [deftest is]]
+  (:require [kotoba.test :refer [deftest is]]
             [kotoba.captcha.audit :as audit]))
 
 (deftest recursive-redaction-and-retention
