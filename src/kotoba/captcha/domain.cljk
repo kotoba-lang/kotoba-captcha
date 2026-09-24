@@ -9,8 +9,7 @@
 (defn now-ms [] #?(:clj (System/currentTimeMillis) :cljs (.now js/Date)))
 
 (defn task-id []
-  #?(:clj (str (java.util.UUID/randomUUID))
-     :cljs (str (random-uuid))))
+  (str (random-uuid)))
 
 (defn normalize-authorization [authorization]
   (when (map? authorization)
