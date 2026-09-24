@@ -1,7 +1,7 @@
 (ns kotoba.captcha.http
   "Ring transport for the authorized solver API. Credentials are never passed
   to the core service or retained in task state."
-  (:require [json.compat :as json]
+  (:require [kotoba.bytes :as kbytes] [json.compat :as json]
             [kotoba.lang.text :as str]
             [kotoba.captcha.api :as api]))
 
@@ -63,13 +63,13 @@
 
 (defn- secure-equal? [a b]
   (and (string? a) (string? b)
-       (java.security.MessageDigest/isEqual (.getBytes a "UTF-8") (.getBytes b "UTF-8"))))
+       (java.security.MessageDigest/isEqual (kbytes/utf8-bytes a) (kbytes/utf8-bytes b))))
 
 (defn- authenticated-key [configured request body]
   (let [presented (or (bearer request) (:clientKey body))]
     (when (and (seq configured) (some #(secure-equal? presented %) configured))
       (let [digest (.digest (doto (java.security.MessageDigest/getInstance "SHA-256")
-                              (.update (.getBytes ^String presented "UTF-8"))))]
+                              (.update (kbytes/utf8-bytes ^String presented))))]
         (format "%064x" (java.math.BigInteger. 1 digest))))))
 
 (defn- prometheus [counters]
